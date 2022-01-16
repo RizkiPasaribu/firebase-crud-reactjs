@@ -11,6 +11,7 @@ import { getData, deleteData } from "./MyFunc";
 function App() {
   const [users, setUsers] = useState([]);
   const [modal, setModal] = useState(false);
+  // const [update, setUpdate] = useState("");
 
   const getUsers = () => {
     const data = getData();
@@ -26,7 +27,6 @@ function App() {
       <h1 className="text-center text-5xl font-bold">
         Firebase CRUD Sederhana Ala Rizki
       </h1>
-
       {/* Tombol Tambah Data */}
       <div className="mt-10" id="sukses">
         <button
@@ -36,7 +36,6 @@ function App() {
           Tambah Data
         </button>
       </div>
-
       {/* Tampilan Data Dalam Bentuk Tabel */}
       <div className="mt-2 mx-auto p-4 bg-slate-300 rounded-md mb-5">
         <table className="border-collapse border border-gray-400 mx-auto table-fixed w-full">
@@ -61,7 +60,9 @@ function App() {
                   <td className="border-2 border-white p-3">{user.Umur}</td>
                   <td className="border-2 border-white p-3 w-1/5">
                     <button
-                      onClick={() => setModal(true)}
+                      onClick={() => {
+                        setModal([true, user]);
+                      }}
                       className="bg-orange-500 px-2 rounded-md hover:opacity-80 h-1/2 text-white mx-2 "
                     >
                       Edit

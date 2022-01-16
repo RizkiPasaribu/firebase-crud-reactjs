@@ -1,45 +1,17 @@
-import React, { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebase-config";
+import React, { useState, useEffect } from "react";
+import { tambahData, updateData } from "../MyFunc";
 
 export function ModalInput({ modal, setModal, getUsers }) {
   const [inputNama, setInputNama] = useState("");
   const [inputUmur, setInputUmur] = useState("");
 
-  // add Data
-  async function tambahData() {
-    setInputNama("");
-    setInputUmur("");
-    setModal(false);
-
-    try {
-      await addDoc(collection(db, "users"), {
-        Nama: inputNama,
-        Umur: inputUmur,
-      });
-
-      //pesan Sukses
-      const para = document.createElement("div");
-      para.style.backgroundColor = "#c4ffc8";
-      para.style.margin = "10px auto";
-      para.style.padding = "15px";
-      para.style.color = "green";
-      para.style.width = "100%";
-      para.style.height = "100%";
-      const node = document.createTextNode("Data berhasil Ditambahkan...");
-      para.appendChild(node);
-      const element = document.getElementById("sukses");
-      element.appendChild(para);
-      setTimeout(() => {
-        document.querySelector("#sukses div").remove();
-      }, 3000);
-
-      // render tabel
-      getUsers();
-    } catch (e) {
-      console.error("Error adding document: ", e);
+  //reRender Setiap modal berubah
+  useEffect(() => {
+    if (modal[1]) {
+      setInputNama(modal[1].Nama);
+      setInputUmur(modal[1].Umur);
     }
-  }
+  }, [modal]);
 
   return (
     <div>
@@ -49,7 +21,11 @@ export function ModalInput({ modal, setModal, getUsers }) {
         <div className="absolute top-0 left-0 w-screen h-screen bg-black opacity-20" />
       )}
       <div
-        onClick={(e) => setModal(false)}
+        onClick={(e) => {
+          setModal(false);
+          setInputNama("");
+          setInputUmur("");
+        }}
         className={
           "absolute w-screen h-screen top-0 right-0 flex justify-center " +
           (modal ? "visible" : "invisible")
@@ -75,7 +51,7 @@ export function ModalInput({ modal, setModal, getUsers }) {
 
           <div className="clear-both border-b-2">
             <h1 className="text-lg font-bold text-white text-center">
-              Tambah Data
+              {modal[1] ? "Edit Data" : "Tambah Data"}
             </h1>
           </div>
 
@@ -103,7 +79,16 @@ export function ModalInput({ modal, setModal, getUsers }) {
           </div>
           <div className="mt-6 flex items-center justify-center">
             <button
-              onClick={(e) => tambahData()}
+              onClick={(e) => {
+                {
+                  modal[1]
+                    ? updateData(inputNama, inputUmur, modal[1].id, getUsers)
+                    : tambahData(inputNama, inputUmur, getUsers);
+                }
+                setModal(false);
+                setInputNama("");
+                setInputUmur("");
+              }}
               className="bg-green-500 px-2 rounded-md hover:opacity-80 h-1/2 text-white"
             >
               Simpan Data
